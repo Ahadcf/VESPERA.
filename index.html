@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VESPERA. — Symbolic Document Intelligence</title>
+
+  <!-- Browser Tab Favicon (Bespoke Vespera Geometric 'V' Prism Emblem) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none'%3E%3Crect width='32' height='32' rx='8' fill='%23FFFFFF'/%3E%3Cpath d='M5.5 7.5L13.8 25.5L17.1 18.2L11.2 7.5H5.5Z' fill='%2318181B'/%3E%3Cpath d='M20.8 7.5L13.8 25.5H18.6L26.5 7.5H20.8Z' fill='%232563EB'/%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none'%3E%3Crect width='32' height='32' rx='8' fill='%23FFFFFF'/%3E%3Cpath d='M5.5 7.5L13.8 25.5L17.1 18.2L11.2 7.5H5.5Z' fill='%2318181B'/%3E%3Cpath d='M20.8 7.5L13.8 25.5H18.6L26.5 7.5H20.8Z' fill='%232563EB'/%3E%3C/svg%3E" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts: ADLaM Display (Hero Wordmark), Plus Jakarta Sans (Display), Inter (UI), JetBrains Mono (Symbolic Logic) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=ADLaM+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Three.js (3D Interactive WebGL Folder Stack) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Client-side Document Parsers (PDF & DOCX) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            ink: '#111111',
+            limepulse: '#D4FF33',
+            charcoal: '#18181B',
+            studio: '#F3F4F6',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+      background-color: #FFFFFF;
+      color: #111111;
+    }
+
+    body {
+      overflow-x: hidden;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    /* Two-tone Swiss studio hero backdrop */
+    .hero-split-bg {
+      background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 45%, #F4F5F7 45.1%, #F5F6F8 100%);
+    }
+
+    /* Giant Edge-to-Edge Editorial Wordmark (Bold iPhone / Apple SF Pro Display) */
+    .hero-wordmark {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 0.88;
+      font-size: clamp(3.75rem, 15.8vw, 15.2rem);
+      color: #18181B;
+      user-select: none;
+      will-change: transform, opacity;
+    }
+
+    /* Subtle blue-ice & studio ambient glow */
+    .hero-floor-waves {
+      background-image:
+        radial-gradient(ellipse 60% 45% at 50% 55%, rgba(59, 130, 246, 0.09), transparent 72%),
+        radial-gradient(ellipse 50% 40% at 82% 78%, rgba(212, 255, 51, 0.14), transparent 70%);
+    }
+
+    /* Sticky Navbar Brand Morph (Continuous 60fps Lerp Driven) */
+    .nav-brand-dock {
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: translateX(-14px) scale(0.92);
+      will-change: max-width, opacity, transform;
+    }
+
+    /* Autonomous Non-Interactive 3D Canvas Container */
+    #vespera-3d-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* Circular Acid-Lime CTA Button */
+    .lime-circle-cta {
+      background-color: #D4FF33;
+      color: #111111;
+      box-shadow: 0 18px 38px -10px rgba(190, 242, 30, 0.7), 0 4px 12px rgba(17, 17, 17, 0.08);
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease, background-color 0.2s ease;
+    }
+    .lime-circle-cta:hover {
+      transform: scale(1.06) translateY(-2px);
+      background-color: #dcff57;
+      box-shadow: 0 24px 44px -8px rgba(190, 242, 30, 0.9), 0 8px 18px rgba(17, 17, 17, 0.12);
+    }
+
+    /* Acid-Lime Pill Highlight Animation on 'reasoning' word */
+    .lime-pill-word {
+      position: relative;
+      display: inline-block;
+      padding: 0.02em 0.34em 0.08em;
+      color: #111111;
+      z-index: 1;
+    }
+    .lime-pill-word::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: #D4FF33;
+      border-radius: 9999px;
+      z-index: -1;
+      transform: scaleX(0.25) scaleY(0.75);
+      opacity: 0;
+      transform-origin: center;
+      transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+    }
+    .lime-pill-word.in-view::before {
+      transform: scaleX(1) scaleY(1);
+      opacity: 1;
+    }
+
+    /* Staggered Dark Feature Cards (Matches video_2 spring rise choreography) */
+    .feature-card-reveal {
+      opacity: 0;
+      transform: translateY(56px);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+                  border-color 0.25s ease,
+                  background-color 0.25s ease;
+    }
+    .feature-card-reveal.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Clean Swiss Card */
+    .swiss-card {
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      box-shadow: 0 10px 30px -15px rgba(17, 17, 17, 0.07);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .swiss-card:hover {
+      border-color: #D1D5DB;
+    }
+
+    /* Custom Details Accordion */
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+    details[open] .accordion-chevron {
+      transform: rotate(90deg);
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-reveal {
+      animation: fadeSlideUp 0.32s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-[#D4FF33] selection:text-[#111111]">
+
+  <!-- Non-blocking Toast Notification (Replaces alert()) -->
+  <div id="toast-box" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+  <!-- ===================================================================== -->
+  <!-- STICKY TOP NAVBAR WITH SCROLL-MORPHING VESPERA. WORDMARK              -->
+  <!-- ===================================================================== -->
+  <header id="sticky-navbar" class="sticky top-0 z-40 transition-all duration-300 bg-white/85 backdrop-blur-md border-b border-transparent">
+    <div class="max-w-7xl mx-auto px-5 sm:px-10 py-3.5 flex items-center justify-between gap-4">
+
+      <!-- Left: Always-Visible Custom Vespera Emblem + Scroll-Docking Wordmark + Pill Navigation -->
+      <!-- Left: Always-Visible Clean Transparent V Emblem + Scroll-Docking Wordmark + Pill Navigation -->
+      <div class="flex items-center">
+        <a
+          href="#"
+          aria-label="Vespera Home"
+          class="inline-flex items-center justify-center w-8 h-8 mr-2.5 shrink-0 hover:scale-105 transition-transform"
+        >
+          <!-- Clean Transparent-Background Geometric V Prism Mark -->
+          <svg class="w-6 h-6" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.5 6.5L13.6 26.5L17.2 18.4L10.8 6.5H4.5Z" fill="#18181B"/>
+            <path d="M21.2 6.5L13.6 26.5H18.8L27.5 6.5H21.2Z" fill="#2563EB"/>
+          </svg>
+        </a>
+
+        <a
+          href="#"
+          id="nav-brand-logo"
+          class="nav-brand-dock font-display font-extrabold text-xl sm:text-2xl tracking-[-0.04em] text-[#18181B] whitespace-nowrap"
+        >
+          VESPERA<span class="text-[#2563EB]">.</span>
+        </a>
+
+        <nav class="inline-flex items-center gap-1 sm:gap-1.5 bg-[#F4F4F5] border border-gray-200/80 rounded-full px-2.5 sm:px-4 py-1.5 text-xs sm:text-sm font-medium text-gray-700">
+          <a href="#capabilities" class="px-2.5 py-1 rounded-full hover:bg-white hover:text-ink transition">Architecture</a>
+          <a href="#capabilities" class="hidden sm:inline-block px-2.5 py-1 rounded-full hover:bg-white hover:text-ink transition">Capabilities</a>
+          <a href="#stage-input" class="px-2.5 py-1 rounded-full hover:bg-white hover:text-ink transition">Workspace</a>
+          <a href="#stage-breakdown" onclick="openKbInspector()" class="px-2.5 py-1 rounded-full hover:bg-white hover:text-ink transition">Evaluation</a>
+        </nav>
+      </div>
+
+      <!-- Right: Symbolic Badge + Try Demo CTA -->
+      <div class="flex items-center gap-3 sm:gap-5">
+        <span class="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700">
+          <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+          <span>Symbolic Engine</span>
+        </span>
+        <button
+          type="button"
+          onclick="loadSampleDocument(true)"
+          class="inline-flex items-center gap-2 bg-[#F4F4F5] hover:bg-[#111111] text-[#111111] hover:text-white border border-gray-200/90 rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition duration-200 cursor-pointer"
+        >
+          <span>Try Demo</span>
+          <span>→</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- HERO SECTION + 3D TRANSLUCENT BLUE GLASS FOLDER STACK                 -->
+  <!-- ===================================================================== -->
+  <section id="hero-section" class="hero-split-bg hero-floor-waves relative border-b border-gray-200/80 overflow-hidden">
+    <div class="w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-14 sm:pb-18">
+
+      <!-- Giant Edge-to-Edge Wordmark + Overlapping 3D Folder Stack (~30% Overlap) -->
+      <div class="relative flex flex-col items-center w-full">
+        <!-- Sleek Personalized Brand Crest Pill -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-gray-200/90 shadow-2xs mb-3 sm:mb-4 z-20">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.5 6.5L13.6 26.5L17.2 18.4L10.8 6.5H4.5Z" fill="#18181B"/>
+            <path d="M21.2 6.5L13.6 26.5H18.8L27.5 6.5H21.2Z" fill="#2563EB"/>
+          </svg>
+          <span class="font-mono text-[11px] font-semibold tracking-[0.14em] uppercase text-gray-700">
+            Vespera Symbolic Engine
+          </span>
+          <span class="w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
+        </div>
+
+        <h1 id="hero-big-wordmark" class="hero-wordmark text-center w-full z-10">
+          VESPERA<span class="text-[#2563EB]">.</span>
+        </h1>
+
+        <!-- Center Overlapping Autonomous 3D Translucent Blue Glass Folder Stack (~30% wordmark overlay) -->
+        <div class="relative z-20 -mt-16 sm:-mt-24 md:-mt-32 lg:-mt-40 w-full max-w-[540px] h-[310px] sm:h-[370px] md:h-[410px] flex items-center justify-center pointer-events-none select-none">
+          <canvas id="vespera-3d-canvas" aria-hidden="true"></canvas>
+        </div>
+
+        <!-- Bottom-Left & Bottom-Right Editorial Metadata Row -->
+        <div class="w-full grid grid-cols-1 md:grid-cols-12 items-end gap-8 -mt-4 sm:-mt-12 md:-mt-20 relative z-20 pointer-events-none">
+
+          <!-- Bottom-Left: Deterministic Badge + Editorial Tagline -->
+          <div class="md:col-span-5 flex flex-col items-start pointer-events-auto">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="flex -space-x-2">
+                <span class="w-8 h-8 rounded-full bg-[#111111] text-[#D4FF33] border-2 border-white flex items-center justify-center text-xs font-mono font-bold">KB</span>
+                <span class="w-8 h-8 rounded-full bg-blue-600 text-white border-2 border-white flex items-center justify-center text-xs font-mono font-bold">IF</span>
+                <span class="w-8 h-8 rounded-full bg-[#D4FF33] text-[#111111] border-2 border-white flex items-center justify-center text-xs font-mono font-bold">→</span>
+              </div>
+              <div>
+                <p class="text-base font-extrabold tracking-tight text-ink leading-none">100% Deterministic</p>
+                <p class="text-[11px] font-medium text-gray-500 mt-1">Zero NLP / Zero RAG</p>
+              </div>
+            </div>
+
+            <p class="text-sm sm:text-[15px] font-medium text-gray-800 max-w-xs leading-relaxed">
+              The symbolic intelligence engine that reads your documents, builds a fact &amp; rule base, and deduces answers.
+            </p>
+            <div class="w-56 border-b-2 border-dotted border-gray-400/80 mt-4"></div>
+          </div>
+
+          <!-- Center Spacer -->
+          <div class="hidden md:block md:col-span-3"></div>
+
+          <!-- Bottom-Right: Spec List + Circular Acid-Lime CTA -->
+          <div class="md:col-span-4 flex flex-row md:flex-col items-center md:items-end justify-between gap-6 pointer-events-auto">
+            <div class="text-left md:text-right space-y-1.5 text-xs sm:text-sm font-medium text-gray-700">
+              <p>Symbolic KB <span class="font-mono text-gray-400 ml-1.5">/01</span></p>
+              <p>Modus Ponens <span class="font-mono text-gray-400 ml-1.5">/02</span></p>
+              <p>Deterministic <span class="font-mono text-gray-400 ml-1.5">/03</span></p>
+            </div>
+
+            <a
+              href="#capabilities"
+              class="lime-circle-cta w-24 h-24 sm:w-28 sm:h-28 rounded-full flex flex-col items-center justify-center text-center p-3 cursor-pointer shrink-0"
+            >
+              <span class="text-xs font-extrabold tracking-tight flex items-center gap-1">
+                <span>▶</span>
+                <span>How it works?</span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- DARK EDITORIAL FEATURE SHOWCASE (#18181B — MATCHES VIDEO_2)           -->
+  <!-- ===================================================================== -->
+  <section id="capabilities" class="bg-[#18181B] text-white py-20 sm:py-28 px-5 sm:px-10 scroll-mt-14">
+    <div class="max-w-7xl mx-auto">
+
+      <!-- Centered Headline with Animated Acid-Lime Pill Highlight on 'reasoning' -->
+      <div class="max-w-3xl mx-auto text-center mb-14 sm:mb-20">
+        <h2 class="font-display text-3xl sm:text-5xl md:text-[3.35rem] font-extrabold tracking-tight leading-[1.12] text-white">
+          All the must haves of a symbolic
+          <span id="reasoning-pill" class="lime-pill-word">reasoning</span>
+          engine.
+        </h2>
+      </div>
+
+      <!-- 4-Card Staggered Grid with Spring Rise Choreography -->
+      <div id="feature-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+
+        <!-- Card 1 -->
+        <div style="transition-delay: 40ms;" class="feature-card-reveal rounded-2xl bg-[#1E1E22] border border-[#27272A] hover:border-[#3F3F46] p-7 sm:p-8 flex flex-col justify-between min-h-[290px]">
+          <div>
+            <div class="w-11 h-11 rounded-full bg-[#D4FF33]/15 border border-[#D4FF33]/40 text-[#D4FF33] flex items-center justify-center mb-12">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+              </svg>
+            </div>
+            <h3 class="font-display text-xl font-bold text-white tracking-tight leading-snug mb-3">
+              Multi-Format<br/>Ingestion
+            </h3>
+          </div>
+          <p class="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+            Extract and normalize text from <span class="text-zinc-200 font-mono">.TXT</span>, <span class="text-zinc-200 font-mono">.PDF</span>, and <span class="text-zinc-200 font-mono">.DOCX</span> documents in-browser.
+          </p>
+        </div>
+
+        <!-- Card 2 -->
+        <div style="transition-delay: 140ms;" class="feature-card-reveal rounded-2xl bg-[#1E1E22] border border-[#27272A] hover:border-[#3F3F46] p-7 sm:p-8 flex flex-col justify-between min-h-[290px]">
+          <div>
+            <div class="w-11 h-11 rounded-full bg-[#D4FF33]/15 border border-[#D4FF33]/40 text-[#D4FF33] flex items-center justify-center mb-12">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h14" />
+              </svg>
+            </div>
+            <h3 class="font-display text-xl font-bold text-white tracking-tight leading-snug mb-3">
+              Fact &amp; Rule<br/>Base
+            </h3>
+          </div>
+          <p class="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+            Segment sentences into atomic facts and explicit <span class="text-zinc-200 font-mono">IF–THEN</span> production rules.
+          </p>
+        </div>
+
+        <!-- Card 3 -->
+        <div style="transition-delay: 240ms;" class="feature-card-reveal rounded-2xl bg-[#1E1E22] border border-[#27272A] hover:border-[#3F3F46] p-7 sm:p-8 flex flex-col justify-between min-h-[290px]">
+          <div>
+            <div class="w-11 h-11 rounded-full bg-[#D4FF33]/15 border border-[#D4FF33]/40 text-[#D4FF33] flex items-center justify-center mb-12">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <h3 class="font-display text-xl font-bold text-white tracking-tight leading-snug mb-3">
+              Modus Ponens<br/>Engine
+            </h3>
+          </div>
+          <p class="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+            Apply forward-chaining deduction (<span class="text-zinc-200 font-mono">P, P → Q ⊢ Q</span>) with predicate contradiction checks.
+          </p>
+        </div>
+
+        <!-- Card 4 -->
+        <div style="transition-delay: 340ms;" class="feature-card-reveal rounded-2xl bg-[#1E1E22] border border-[#27272A] hover:border-[#3F3F46] p-7 sm:p-8 flex flex-col justify-between min-h-[290px]">
+          <div>
+            <div class="w-11 h-11 rounded-full bg-[#D4FF33]/15 border border-[#D4FF33]/40 text-[#D4FF33] flex items-center justify-center mb-12">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <h3 class="font-display text-xl font-bold text-white tracking-tight leading-snug mb-3">
+              Zero<br/>Hallucination
+            </h3>
+          </div>
+          <p class="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+            Ground every response in inspectable keyword overlap and exact document evidence.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- SIMPLE 3-STAGE SYMBOLIC DOCUMENT Q&A WORKSPACE                        -->
+  <!-- ===================================================================== -->
+  <main class="max-w-3xl mx-auto px-5 sm:px-8 py-16 sm:py-24">
+
+    <!-- =================================================================== -->
+    <!-- 01 / THE INPUT                                                      -->
+    <!-- =================================================================== -->
+    <section id="stage-input" class="pb-12 border-b border-gray-200 scroll-mt-20">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <span class="font-mono text-xs font-semibold tracking-[0.18em] uppercase text-gray-500">
+          01 / THE INPUT
+        </span>
+        <button
+          type="button"
+          onclick="loadSampleDocument(false)"
+          class="text-xs font-semibold px-3.5 py-1.5 rounded-full bg-[#D4FF33]/55 hover:bg-[#D4FF33] text-ink transition cursor-pointer"
+        >
+          ✨ Load sample document to try
+        </button>
+      </div>
+
+      <h2 class="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-ink mb-1.5">
+        First, bring the document.
+      </h2>
+      <p class="text-sm text-gray-500 mb-6">
+        Upload a plain-text, PDF, or Word document and let Vespera build its symbolic knowledge base.
+      </p>
+
+      <!-- Drag & Drop Card -->
+      <div class="swiss-card rounded-2xl p-5 sm:p-6">
+        <label
+          id="drop-zone"
+          for="file-input"
+          class="flex flex-col sm:flex-row items-center justify-between gap-4 border-2 border-dashed border-gray-200 hover:border-ink rounded-xl p-6 bg-[#FAFAFA] hover:bg-[#F4F4F5] transition cursor-pointer"
+        >
+          <div class="flex items-center gap-4 text-center sm:text-left">
+            <div class="w-12 h-12 rounded-2xl bg-ink text-[#D4FF33] flex items-center justify-center shrink-0 mx-auto sm:mx-0 shadow-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-ink">
+                Drop your document here, or <span class="underline decoration-[#D4FF33] decoration-2 underline-offset-4">browse files</span>
+              </p>
+              <p class="text-xs text-gray-500 mt-1">
+                Supports <span class="font-mono text-gray-700">.txt</span>, <span class="font-mono text-gray-700">.pdf</span>, and <span class="font-mono text-gray-700">.docx</span>
+              </p>
+            </div>
+          </div>
+          <span class="px-4 py-2 rounded-full bg-white border border-gray-200 text-xs font-semibold text-ink shadow-xs shrink-0">
+            Choose File
+          </span>
+          <input id="file-input" type="file" accept=".txt,.pdf,.docx" class="hidden" onchange="handleFileUpload(event)" />
+        </label>
+
+        <!-- Loaded File Status Pill -->
+        <div id="upload-status-area" class="hidden mt-4 space-y-3 animate-reveal">
+          <div class="flex items-center justify-between px-4 py-3 rounded-xl bg-[#F4F4F5] border border-gray-200">
+            <div class="flex items-center gap-3 overflow-hidden">
+              <span class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-mono shrink-0">DOC</span>
+              <div class="truncate">
+                <p id="file-name-display" class="text-sm font-semibold text-ink truncate">sample_document.txt</p>
+                <p id="file-size-display" class="text-xs text-gray-500 font-mono">820 B</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onclick="clearDocument()"
+              class="text-xs font-medium text-gray-500 hover:text-red-600 px-2.5 py-1 rounded-lg hover:bg-red-50 transition cursor-pointer"
+            >
+              ✕ Remove
+            </button>
+          </div>
+
+          <div class="px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-sm font-medium flex items-center gap-2.5">
+            <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">✓</span>
+            <span>Vespera has read your document. Symbolic knowledge base is ready.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 02 / THE BREAKDOWN                                                  -->
+    <!-- =================================================================== -->
+    <section id="stage-breakdown" class="py-12 border-b border-gray-200 scroll-mt-20">
+      <div class="font-mono text-xs font-semibold tracking-[0.18em] uppercase text-gray-500 mb-2">
+        02 / THE BREAKDOWN
+      </div>
+      <h2 class="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-ink mb-1.5">
+        A little document intelligence.
+      </h2>
+      <p class="text-sm text-gray-500 mb-6">
+        Here is what Vespera extracted and structured inside your symbolic knowledge base.
+      </p>
+
+      <!-- 3 Minimalist Metric Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="swiss-card rounded-2xl p-6">
+          <p class="text-xs font-medium text-gray-500 mb-2">Total Sentences</p>
+          <p id="stat-sentences" class="font-display text-5xl font-extrabold tracking-tight text-ink">0</p>
+        </div>
+
+        <div class="swiss-card rounded-2xl p-6">
+          <p class="text-xs font-medium text-gray-500 mb-2">Knowledge Base Facts</p>
+          <p id="stat-facts" class="font-display text-5xl font-extrabold tracking-tight text-ink">0</p>
+        </div>
+
+        <div class="swiss-card rounded-2xl p-6 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-16 h-16 bg-[#D4FF33]/35 rounded-bl-full pointer-events-none"></div>
+          <p class="text-xs font-medium text-gray-500 mb-2">Rules Identified</p>
+          <p id="stat-rules" class="font-display text-5xl font-extrabold tracking-tight text-ink">0</p>
+        </div>
+      </div>
+
+      <!-- Toggleable Inspect Knowledge Base Drawer -->
+      <details id="kb-inspector-details" class="mt-4 swiss-card rounded-2xl overflow-hidden">
+        <summary class="px-5 py-3.5 text-xs sm:text-sm font-semibold text-gray-800 hover:text-ink flex items-center justify-between cursor-pointer select-none bg-[#FAFAFA]">
+          <span class="flex items-center gap-2.5">
+            <span class="accordion-chevron text-gray-400 text-xs transition-transform duration-200">▶</span>
+            <span>Inspect Knowledge Base (Facts F1…Fn &amp; Rules R1…Rm)</span>
+          </span>
+          <span class="font-mono text-[11px] text-gray-400">Symbolic Memory</span>
+        </summary>
+        <div id="kb-inspector-body" class="p-5 border-t border-gray-200 text-xs sm:text-sm text-gray-600 space-y-4">
+          <p class="text-gray-400">Upload a document or click "Load sample document to try" to inspect structured facts and production rules.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 03 / THE INTERROGATION                                              -->
+    <!-- =================================================================== -->
+    <section id="stage-query" class="pt-12 scroll-mt-20">
+      <div class="font-mono text-xs font-semibold tracking-[0.18em] uppercase text-gray-500 mb-2">
+        03 / THE INTERROGATION
+      </div>
+      <h2 class="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-ink mb-1.5">
+        Okay, what’s the question?
+      </h2>
+      <p class="text-sm text-gray-500 mb-6">
+        Ask Vespera anything about the uploaded document.
+      </p>
+
+      <!-- Question Box Card -->
+      <div class="swiss-card rounded-2xl p-5 sm:p-6">
+        <form onsubmit="handleAskQuestion(event)">
+          <label for="question-input" class="block text-xs font-semibold text-gray-700 mb-2">
+            Your question
+          </label>
+          <input
+            id="question-input"
+            type="text"
+            placeholder="e.g., What happens if a machine learning model is trained using labelled data?"
+            class="w-full px-4 py-3.5 rounded-xl bg-[#F9FAFB] border border-gray-200 focus:border-ink focus:bg-white focus:outline-none text-sm sm:text-base text-ink placeholder-gray-400 transition"
+          />
+
+          <!-- 4 Quick Test Sample Question Pills -->
+          <div class="mt-3.5 flex flex-wrap items-center gap-2">
+            <span class="text-[11px] font-medium text-gray-400">Try asking:</span>
+            <button
+              type="button"
+              onclick="askPreset('What happens if a machine learning model is trained using labelled data?')"
+              class="text-xs font-medium px-3 py-1.5 rounded-full bg-[#F4F4F5] hover:bg-[#D4FF33] text-gray-700 hover:text-ink transition cursor-pointer"
+            >
+              1. Rule Inference (Labelled data)
+            </button>
+            <button
+              type="button"
+              onclick="askPreset('How does Breadth-First Search explore nodes?')"
+              class="text-xs font-medium px-3 py-1.5 rounded-full bg-[#F4F4F5] hover:bg-[#D4FF33] text-gray-700 hover:text-ink transition cursor-pointer"
+            >
+              2. Direct Fact (BFS Search)
+            </button>
+            <button
+              type="button"
+              onclick="askPreset('If a model is trained using unlabelled data, is it a supervised learning model?')"
+              class="text-xs font-medium px-3 py-1.5 rounded-full bg-[#F4F4F5] hover:bg-amber-200 text-gray-700 hover:text-ink transition cursor-pointer"
+            >
+              3. Contradiction Check
+            </button>
+            <button
+              type="button"
+              onclick="askPreset('What is the boiling point of liquid nitrogen?')"
+              class="text-xs font-medium px-3 py-1.5 rounded-full bg-[#F4F4F5] hover:bg-gray-200 text-gray-700 hover:text-ink transition cursor-pointer"
+            >
+              4. Out-of-Scope Query
+            </button>
+          </div>
+
+          <div class="mt-6">
+            <button
+              type="submit"
+              class="px-6 py-3.5 rounded-full bg-ink hover:bg-black/85 text-white text-sm font-semibold inline-flex items-center gap-2.5 shadow-sm transition cursor-pointer group"
+            >
+              <span>Find my answer</span>
+              <span class="w-5 h-5 rounded-full bg-[#D4FF33] text-ink flex items-center justify-center text-xs font-bold group-hover:translate-x-0.5 transition-transform">→</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- ANSWER OUTPUT & EXPANDABLE REASONING DRAWERS                        -->
+      <!-- =================================================================== -->
+      <div id="answer-section" class="hidden mt-8 space-y-4 animate-reveal">
+        <h3 class="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">
+          Vespera’s got something for you.
+        </h3>
+
+        <!-- Dynamic Conclusion / Match Card -->
+        <div id="answer-card"></div>
+
+        <!-- Collapsible Drawer 1: Retrieved Information -->
+        <details class="swiss-card rounded-2xl overflow-hidden">
+          <summary class="px-5 py-3.5 text-xs sm:text-sm font-semibold text-gray-800 hover:text-ink flex items-center justify-between cursor-pointer select-none bg-[#FAFAFA]">
+            <span class="flex items-center gap-2.5">
+              <span class="accordion-chevron text-gray-400 text-xs transition-transform duration-200">▶</span>
+              <span>📑 Explore retrieved information</span>
+            </span>
+            <span class="font-mono text-[11px] text-gray-400">Source Facts</span>
+          </summary>
+          <div id="drawer-retrieved" class="p-5 border-t border-gray-200 text-xs sm:text-sm space-y-2.5"></div>
+        </details>
+
+        <!-- Collapsible Drawer 2: Question Analysis -->
+        <details class="swiss-card rounded-2xl overflow-hidden">
+          <summary class="px-5 py-3.5 text-xs sm:text-sm font-semibold text-gray-800 hover:text-ink flex items-center justify-between cursor-pointer select-none bg-[#FAFAFA]">
+            <span class="flex items-center gap-2.5">
+              <span class="accordion-chevron text-gray-400 text-xs transition-transform duration-200">▶</span>
+              <span>🔍 Explore question analysis</span>
+            </span>
+            <span class="font-mono text-[11px] text-gray-400">Symbolic Trace</span>
+          </summary>
+          <div id="drawer-analysis" class="p-5 border-t border-gray-200 text-xs sm:text-sm space-y-2"></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Minimal Studio Footer with Professional Creator Badge for AHAD -->
+    <footer class="mt-20 pt-10 border-t border-gray-200 flex flex-col items-center text-center space-y-4">
+      <div class="flex flex-col items-center space-y-2">
+        <div class="inline-flex items-center gap-2">
+          <svg class="w-5 h-5" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.5 6.5L13.6 26.5L17.2 18.4L10.8 6.5H4.5Z" fill="#18181B"/>
+            <path d="M21.2 6.5L13.6 26.5H18.8L27.5 6.5H21.2Z" fill="#2563EB"/>
+          </svg>
+          <span class="font-display font-extrabold text-base tracking-tight text-[#18181B]">VESPERA<span class="text-[#2563EB]">.</span></span>
+        </div>
+        <p class="text-xs font-medium text-gray-500">
+          Powered by deterministic keyword retrieval &amp; Modus Ponens rule-based reasoning.
+        </p>
+        <p class="text-xs text-gray-400">
+          Zero NLP • Zero RAG • 100% Document-Grounded
+        </p>
+      </div>
+
+      <!-- Studio Creator Signature Badge -->
+      <a
+        href="https://github.com/Ahadcf"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="AHAD on GitHub"
+        class="group inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[#18181B] hover:bg-[#111111] text-white border border-zinc-800 hover:border-[#2563EB] shadow-md transition-all duration-200"
+      >
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4FF33] opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-[#D4FF33]"></span>
+        </span>
+        <span class="font-mono text-[11px] font-semibold tracking-[0.2em] uppercase text-zinc-200">
+          ENGINEERED &amp; ARCHITECTED BY <span class="text-[#D4FF33] font-bold group-hover:underline underline-offset-4">AHAD</span>
+        </span>
+        <svg class="w-4 h-4 text-zinc-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+        </svg>
+      </a>
+    </footer>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- THREE.JS PHOTOREALISTIC AUTONOMOUS 3D FOLDER ACCORDION                -->
+  <!-- ===================================================================== -->
+  <script>
+    function createFolderExtrudeGeometry() {
+      // Sculpted rounded file folder silhouette matching studio 3D reference
+      const shape = new THREE.Shape();
+      const w = 1.42;
+      const h = 1.05;
+      const r = 0.16;
+      const tabW = 0.58;
+      const tabH = 0.22;
+
+      shape.moveTo(-w + r, -h);
+      shape.lineTo(w - r, -h);
+      shape.quadraticCurveTo(w, -h, w, -h + r);
+      shape.lineTo(w, h - tabH - r);
+      shape.quadraticCurveTo(w, h - tabH, w - r, h - tabH);
+      shape.lineTo(-w + tabW + 0.14, h - tabH);
+      shape.quadraticCurveTo(-w + tabW + 0.04, h - tabH, -w + tabW - 0.03, h - 0.06);
+      shape.quadraticCurveTo(-w + tabW - 0.08, h, -w + tabW - 0.17, h);
+      shape.lineTo(-w + r, h);
+      shape.quadraticCurveTo(-w, h, -w, h - r);
+      shape.lineTo(-w, -h + r);
+      shape.quadraticCurveTo(-w, -h, -w + r, -h);
+
+      const extrudeSettings = {
+        steps: 2,
+        depth: 0.055,
+        bevelEnabled: true,
+        bevelThickness: 0.024,
+        bevelSize: 0.022,
+        bevelSegments: 6,
+        curveSegments: 24
+      };
+
+      const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+      geom.center();
+      return geom;
+    }
+
+    function createStudioEnvMap() {
+      // Procedural studio softbox reflection cubemap for realistic glass & metallic highlights
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+
+      const grad = ctx.createLinearGradient(0, 0, 512, 256);
+      grad.addColorStop(0.0, '#0f172a');
+      grad.addColorStop(0.25, '#1d4ed8');
+      grad.addColorStop(0.48, '#e0f2fe');
+      grad.addColorStop(0.55, '#ffffff');
+      grad.addColorStop(0.75, '#3b82f6');
+      grad.addColorStop(1.0, '#090d16');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 512, 256);
+
+      // Softbox specular strips
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.fillRect(90, 20, 75, 210);
+      ctx.fillStyle = 'rgba(186, 230, 253, 0.65)';
+      ctx.fillRect(320, 35, 95, 180);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.mapping = THREE.EquirectangularReflectionMapping;
+      return texture;
+    }
+
+    function initHero3D() {
+      const canvas = document.getElementById('vespera-3d-canvas');
+      if (!canvas || typeof THREE === 'undefined') return;
+
+      const scene = new THREE.Scene();
+      const envMap = createStudioEnvMap();
+      scene.environment = envMap;
+
+      const camera = new THREE.PerspectiveCamera(32, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+      camera.position.set(0, 0.04, 7.15);
+
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: 'high-performance'
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.28;
+
+      // Multi-Point Studio Lighting Rig
+      const ambientLight = new THREE.AmbientLight(0xdbeafe, 0.9);
+      scene.add(ambientLight);
+
+      const keyLight = new THREE.DirectionalLight(0xffffff, 2.9);
+      keyLight.position.set(4.5, 6.5, 5.5);
+      scene.add(keyLight);
+
+      const cobaltRim = new THREE.DirectionalLight(0x2563eb, 3.3);
+      cobaltRim.position.set(-5.5, 2.0, 4.0);
+      scene.add(cobaltRim);
+
+      const silverEdgeLight = new THREE.DirectionalLight(0xe0f2fe, 2.3);
+      silverEdgeLight.position.set(2.5, -4.5, 3.5);
+      scene.add(silverEdgeLight);
+
+      const backRim = new THREE.DirectionalLight(0xffffff, 1.9);
+      backRim.position.set(-3.0, 4.5, -5.0);
+      scene.add(backRim);
+
+      // Fixed Isometric 3/4 Perspective Group (Non-Interactive Autonomous Showcase)
+      const stackGroup = new THREE.Group();
+      stackGroup.rotation.set(0.15, -0.54, 0.05);
+      stackGroup.scale.set(1.06, 1.06, 1.06);
+      scene.add(stackGroup);
+
+      const folderGeom = createFolderExtrudeGeometry();
+      const edgesGeom = new THREE.EdgesGeometry(folderGeom, 32);
+
+      // 6 Graduated Translucent Cobalt Frosted Glass Folders (Tuned for Real Glass Refraction Over Dark Typography)
+      const LAYER_COUNT = 6;
+      const folderLayers = [];
+
+      const layerPalette = [
+        { color: 0x1e40af, emissive: 0x0f172a, opacity: 0.84, metal: 0.56, rough: 0.11 }, // Front rich royal cobalt + specular rim
+        { color: 0x1d4ed8, emissive: 0x172554, opacity: 0.76, metal: 0.48, rough: 0.14 }, // Deep sapphire translucent glass
+        { color: 0x2563eb, emissive: 0x1e3a8a, opacity: 0.68, metal: 0.40, rough: 0.17 }, // Vibrant cobalt glass
+        { color: 0x3b82f6, emissive: 0x1d4ed8, opacity: 0.56, metal: 0.32, rough: 0.20 }, // Translucent blue glass
+        { color: 0x60a5fa, emissive: 0x2563eb, opacity: 0.42, metal: 0.24, rough: 0.24 }, // Frosted sky-blue glass
+        { color: 0x93c5fd, emissive: 0x3b82f6, opacity: 0.28, metal: 0.16, rough: 0.28 }  // Back icy mist glass
+      ];
+
+      for (let i = 0; i < LAYER_COUNT; i++) {
+        const layerHolder = new THREE.Group();
+        const spec = layerPalette[i];
+
+        const glassMat = new THREE.MeshPhysicalMaterial({
+          color: spec.color,
+          emissive: spec.emissive,
+          emissiveIntensity: 0.22,
+          metalness: spec.metal,
+          roughness: spec.rough,
+          clearcoat: 1.0,
+          clearcoatRoughness: 0.06,
+          reflectivity: 1.0,
+          envMap: envMap,
+          envMapIntensity: 1.35,
+          transparent: true,
+          opacity: spec.opacity,
+          depthWrite: i === 0
+        });
+
+        const mesh = new THREE.Mesh(folderGeom, glassMat);
+        layerHolder.add(mesh);
+
+        // Crisp Silver-Blue Bevel Rim Highlight
+        const edgeMat = new THREE.LineBasicMaterial({
+          color: i < 2 ? 0xffffff : 0xbae6fd,
+          transparent: true,
+          opacity: 0.88 - (i / LAYER_COUNT) * 0.44
+        });
+        const edgeLines = new THREE.LineSegments(edgesGeom, edgeMat);
+        layerHolder.add(edgeLines);
+
+        stackGroup.add(layerHolder);
+        folderLayers.push({ holder: layerHolder, index: i });
+      }
+
+      // Soft Grounded Studio Contact Shadow Oval beneath the Floating Folder Stack
+      const shadowCanvas = document.createElement('canvas');
+      shadowCanvas.width = 256;
+      shadowCanvas.height = 128;
+      const sCtx = shadowCanvas.getContext('2d');
+      const sGrad = sCtx.createRadialGradient(128, 64, 10, 128, 64, 118);
+      sGrad.addColorStop(0, 'rgba(15, 23, 42, 0.28)');
+      sGrad.addColorStop(0.55, 'rgba(30, 58, 138, 0.11)');
+      sGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      sCtx.fillStyle = sGrad;
+      sCtx.fillRect(0, 0, 256, 128);
+
+      const shadowTex = new THREE.CanvasTexture(shadowCanvas);
+      const shadowPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(3.5, 1.35),
+        new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false })
+      );
+      shadowPlane.rotation.x = -Math.PI / 2;
+      shadowPlane.position.set(0.15, -1.32, -0.2);
+      scene.add(shadowPlane);
+
+      function onResize() {
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        if (width === 0 || height === 0) return;
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height, false);
+      }
+      window.addEventListener('resize', onResize);
+
+      // Pure Autonomous Harmonic Breathing Accordion & 3D Floating Levitation Loop
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        const t = clock.getElapsedTime();
+
+        // Smooth harmonic breathing cycle: compact stack -> fanned diagonal cascade -> compact stack
+        const harmonic = 0.5 - 0.5 * Math.cos(t * 1.18);
+        const accordion = Math.pow(harmonic, 1.45);
+
+        const zSpacing = 0.095 + accordion * 0.36;
+        const xOffset = 0.038 + accordion * 0.095;
+        const yOffset = 0.022 + accordion * 0.062;
+
+        folderLayers.forEach(({ holder, index }) => {
+          const centeredIdx = index - (LAYER_COUNT - 1) * 0.38;
+          holder.position.z = -centeredIdx * zSpacing;
+          holder.position.x = centeredIdx * xOffset;
+          holder.position.y = centeredIdx * yOffset;
+          holder.rotation.y = centeredIdx * accordion * 0.032;
+        });
+
+        // 3D floating levitation & subtle spatial tilt directly over the VESPERA. letters
+        const floatY = Math.sin(t * 1.18) * 0.075;
+        stackGroup.position.y = floatY;
+        stackGroup.rotation.x = 0.15 + Math.sin(t * 0.9) * 0.025;
+        stackGroup.rotation.y = -0.54 + Math.cos(t * 0.85) * 0.035;
+        shadowPlane.scale.set(1 + accordion * 0.2 - floatY * 0.45, 1 + accordion * 0.15, 1);
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    }
+
+    window.addEventListener('load', initHero3D);
+  </script>
+
+  <!-- ===================================================================== -->
+  <!-- ULTRA-SMOOTH 60FPS LERP SCROLL CHOREOGRAPHY                           -->
+  <!-- ===================================================================== -->
+  <script>
+    function initScrollChoreography() {
+      const navBrand = document.getElementById('nav-brand-logo');
+      const heroWordmark = document.getElementById('hero-big-wordmark');
+      const stickyNavbar = document.getElementById('sticky-navbar');
+      const reasoningPill = document.getElementById('reasoning-pill');
+      const featureCards = document.querySelectorAll('.feature-card-reveal');
+
+      // Continuous Exponential Lerp Scroll Interpolation (Zero Jitter)
+      let currentDockProgress = 0;
+      function updateSmoothScrollLoop() {
+        const scrollY = window.scrollY || window.pageYOffset;
+        // Smooth ramp between 40px and 260px scroll depth
+        const targetProgress = Math.min(Math.max((scrollY - 40) / 220, 0), 1);
+        currentDockProgress += (targetProgress - currentDockProgress) * 0.085;
+
+        // Snap tiny floating point remainders
+        if (Math.abs(targetProgress - currentDockProgress) < 0.0005) {
+          currentDockProgress = targetProgress;
+        }
+
+        // Interpolate navbar VESPERA. logo docking
+        if (navBrand) {
+          navBrand.style.maxWidth = `${currentDockProgress * 175}px`;
+          navBrand.style.opacity = `${currentDockProgress}`;
+          navBrand.style.transform = `translateX(${(1 - currentDockProgress) * -14}px) scale(${0.92 + currentDockProgress * 0.08})`;
+          navBrand.style.marginRight = `${currentDockProgress * 0.75}rem`;
+        }
+
+        // Interpolate giant hero VESPERA. wordmark fade & elevation
+        if (heroWordmark) {
+          heroWordmark.style.opacity = `${1 - currentDockProgress * 0.86}`;
+          heroWordmark.style.transform = `translateY(${-currentDockProgress * 28}px) scale(${1 - currentDockProgress * 0.08})`;
+        }
+
+        // Smooth navbar border elevation
+        if (stickyNavbar) {
+          if (currentDockProgress > 0.25) {
+            stickyNavbar.classList.add('border-gray-200/80', 'shadow-xs');
+          } else {
+            stickyNavbar.classList.remove('border-gray-200/80', 'shadow-xs');
+          }
+        }
+
+        requestAnimationFrame(updateSmoothScrollLoop);
+      }
+      requestAnimationFrame(updateSmoothScrollLoop);
+
+      // IntersectionObserver for Dark Feature Showcase Pill & Staggered Cards
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in-view');
+            }
+          });
+        }, { threshold: 0.18 });
+
+        if (reasoningPill) observer.observe(reasoningPill);
+        featureCards.forEach(card => observer.observe(card));
+      } else {
+        if (reasoningPill) reasoningPill.classList.add('in-view');
+        featureCards.forEach(card => card.classList.add('in-view'));
+      }
+    }
+
+    window.addEventListener('load', initScrollChoreography);
+  </script>
+
+  <!-- ===================================================================== -->
+  <!-- PURE DETERMINISTIC SYMBOLIC QA ENGINE (ZERO NLP / ZERO RAG)           -->
+  <!-- ===================================================================== -->
+  <script>
+    if (typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    // 1. Deterministic Stopwords List (No external NLP libraries)
+    const STOPWORDS = new Set([
+      'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
+      'what', 'which', 'who', 'whom', 'when', 'where', 'why', 'how',
+      'if', 'then', 'else', 'happens', 'happen', 'do', 'does', 'did',
+      'to', 'of', 'in', 'on', 'at', 'by', 'for', 'with', 'about',
+      'from', 'into', 'during', 'before', 'after', 'above', 'below',
+      'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some',
+      'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very',
+      'can', 'will', 'just', 'should', 'now', 'it', 'its', 'they', 'them',
+      'their', 'this', 'that', 'these', 'those', 'called', 'known', 'tell', 'me'
+    ]);
+
+    // 2. Explicit Opposing Concepts for Contradiction Checking
+    const OPPOSING_TERMS = [
+      ['labelled', 'unlabelled'],
+      ['labeled', 'unlabeled'],
+      ['supervised', 'unsupervised'],
+      ['complete', 'incomplete'],
+      ['optimal', 'suboptimal'],
+      ['deterministic', 'stochastic']
+    ];
+
+    // 3. Domain Sample Document (AI Assignment AID201A Corpus)
+    const SAMPLE_DOCUMENT_TEXT = `Artificial Intelligence is the study of rational agents that perceive their environment and take actions to achieve specific goals.
+A knowledge-based agent stores facts and logical rules inside an internal Knowledge Base to reason about the world.
+IF a machine learning model is trained using labelled data, THEN it is called a supervised learning model.
+IF a machine learning model is trained using unlabelled data, THEN it is called an unsupervised learning model.
+A* search is an informed search algorithm that finds the shortest path by combining path cost and a heuristic estimate.
+IF a heuristic function is admissible, THEN A* search is guaranteed to find an optimal solution.
+Breadth-First Search explores the shallowest nodes first using a FIFO queue data structure.
+Depth-First Search explores the deepest unexpanded node first using a LIFO stack data structure.`;
+
+    // 4. In-Memory Symbolic Knowledge Base
+    const KB = {
+      fileName: '',
+      sentences: [],
+      facts: [], // { text, keywords: Set }
+      rules: []  // { raw, condition, conclusion, condKeywords: Set }
+    };
+
+    function segmentIntoSentences(text) {
+      const cleaned = text.replace(/\r\n/g, '\n').replace(/\s+/g, ' ').trim();
+      if (!cleaned) return [];
+      return cleaned
+        .split(/(?<=[.!?])\s+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 2);
+    }
+
+    function extractKeywords(text) {
+      const tokens = text.toLowerCase().match(/[a-z0-9*]+/g) || [];
+      return Array.from(new Set(tokens.filter(t => t.length > 1 && !STOPWORDS.has(t))));
+    }
+
+    function constructKnowledgeBase(fileName, fileSizeLabel, rawText) {
+      const sentences = segmentIntoSentences(rawText);
+      KB.fileName = fileName;
+      KB.sentences = sentences;
+      KB.facts = [];
+      KB.rules = [];
+
+      sentences.forEach(sentence => {
+        const keywords = extractKeywords(sentence);
+        const ruleMatch = sentence.match(/^if\s+(.+?)(?:,?\s+then\s+)(.+?)[.!?]?$/i);
+
+        if (ruleMatch) {
+          const condition = ruleMatch[1].trim();
+          const conclusion = ruleMatch[2].trim();
+          KB.rules.push({
+            raw: sentence,
+            condition,
+            conclusion,
+            condKeywords: new Set(extractKeywords(condition))
+          });
+        } else {
+          KB.facts.push({
+            text: sentence,
+            keywords: new Set(keywords)
+          });
+        }
+      });
+
+      // Update Stats
+      document.getElementById('stat-sentences').textContent = KB.sentences.length;
+      document.getElementById('stat-facts').textContent = KB.facts.length;
+      document.getElementById('stat-rules').textContent = KB.rules.length;
+
+      // Update File Banner
+      document.getElementById('file-name-display').textContent = fileName;
+      document.getElementById('file-size-display').textContent = fileSizeLabel;
+      const uploadStatusArea = document.getElementById('upload-status-area');
+      if (uploadStatusArea) uploadStatusArea.classList.remove('hidden');
+      const answerSection = document.getElementById('answer-section');
+      if (answerSection) answerSection.classList.add('hidden');
+
+      renderKbInspector();
+    }
+
+    function renderKbInspector() {
+      const body = document.getElementById('kb-inspector-body');
+      if (KB.sentences.length === 0) {
+        body.innerHTML = `<p class="text-gray-400">Upload a document or click "Load sample document to try" to inspect structured facts and production rules.</p>`;
+        return;
+      }
+
+      const rulesHtml = KB.rules.length > 0
+        ? KB.rules.map((r, i) => `
+            <div class="p-3 rounded-xl bg-[#D4FF33]/20 border border-[#b4e01b]/50">
+              <span class="font-mono text-[11px] font-bold text-ink">R${i + 1}:</span>
+              <span class="text-gray-800"> <strong>IF</strong> ${escapeHtml(r.condition)} <strong>→ THEN</strong> ${escapeHtml(r.conclusion)}.</span>
+            </div>
+          `).join('')
+        : `<p class="text-gray-400">No explicit IF–THEN rules detected in this document.</p>`;
+
+      const factsHtml = KB.facts.length > 0
+        ? KB.facts.map((f, i) => `
+            <div class="p-2.5 rounded-xl bg-[#F9FAFB] border border-gray-200">
+              <span class="font-mono text-[11px] font-semibold text-blue-600">F${i + 1}:</span>
+              <span class="text-gray-700"> ${escapeHtml(f.text)}</span>
+            </div>
+          `).join('')
+        : `<p class="text-gray-400">No standalone declarative facts found.</p>`;
+
+      body.innerHTML = `
+        <div>
+          <p class="font-mono text-[11px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Extracted Production Rules (${KB.rules.length})</p>
+          <div class="space-y-2">${rulesHtml}</div>
+        </div>
+        <div>
+          <p class="font-mono text-[11px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Atomic Knowledge Facts (${KB.facts.length})</p>
+          <div class="space-y-2">${factsHtml}</div>
+        </div>
+      `;
+    }
+
+    function openKbInspector() {
+      const det = document.getElementById('kb-inspector-details');
+      if (det) det.open = true;
+    }
+
+    function classifyQuestion(q) {
+      const lower = q.trim().toLowerCase();
+      if (lower.startsWith('if ') || lower.includes('what happens if') || lower.startsWith('when ')) {
+        return 'Conditional / Inference Query';
+      }
+      if (lower.startsWith('is ') || lower.startsWith('does ') || lower.startsWith('can ')) {
+        return 'Verification Query';
+      }
+      return 'Factual / Definition Query';
+    }
+
+    function hasContradiction(querySet, condSet) {
+      for (const [a, b] of OPPOSING_TERMS) {
+        if ((querySet.has(a) && condSet.has(b)) || (querySet.has(b) && condSet.has(a))) {
+          return `${a} vs. ${b}`;
+        }
+      }
+      return null;
+    }
+
+    function answerQuestion(questionText) {
+      const queryKeywords = extractKeywords(questionText);
+      const querySet = new Set(queryKeywords);
+      const questionType = classifyQuestion(questionText);
+
+      // 1. Evaluate IF-THEN Rules via Modus Ponens
+      let matchedRule = null;
+      let bestRuleScore = 0;
+      let contradictionNote = null;
+
+      KB.rules.forEach((rule, idx) => {
+        const overlap = queryKeywords.filter(k => rule.condKeywords.has(k));
+        const conflict = hasContradiction(querySet, rule.condKeywords);
+
+        if (conflict && overlap.length >= 2) {
+          contradictionNote = { rule, conflict, id: `R${idx + 1}` };
+        }
+
+        const coverage = rule.condKeywords.size > 0
+          ? overlap.length / Math.min(queryKeywords.length, rule.condKeywords.size)
+          : 0;
+
+        if (!conflict && coverage >= 0.6 && overlap.length >= 2 && coverage > bestRuleScore) {
+          bestRuleScore = coverage;
+          matchedRule = { rule, overlap, score: coverage, id: `R${idx + 1}` };
+        }
+      });
+
+      // 2. Rank Factual Sentences by Keyword Overlap
+      const allSearchable = [
+        ...KB.facts.map((f, i) => ({ text: f.text, keywords: f.keywords, label: `Fact F${i + 1}` })),
+        ...KB.rules.map((r, i) => ({ text: r.raw, keywords: new Set(extractKeywords(r.raw)), label: `Rule R${i + 1}` }))
+      ];
+
+      const retrieved = allSearchable
+        .map(item => {
+          const overlap = queryKeywords.filter(k => item.keywords.has(k));
+          const score = queryKeywords.length > 0 ? overlap.length / queryKeywords.length : 0;
+          return { text: item.text, overlap, score, label: item.label };
+        })
+        .filter(item => item.overlap.length >= 1 && item.score >= 0.35)
+        .sort((a, b) => b.score - a.score);
+
+      const answerCard = document.getElementById('answer-card');
+      let topOverlapScore = 0;
+
+      if (contradictionNote && !matchedRule) {
+        topOverlapScore = 0;
+        answerCard.innerHTML = `
+          <div class="rounded-2xl bg-amber-50 border border-amber-300 p-6 space-y-2.5">
+            <p class="text-xs font-mono font-bold uppercase tracking-wider text-amber-800">
+              ⚠️ Predicate Contradiction Detected (${escapeHtml(contradictionNote.conflict)})
+            </p>
+            <p class="text-base text-gray-800 leading-relaxed">
+              Rule <span class="font-mono font-bold">${contradictionNote.id}</span> states: <span class="italic font-medium text-amber-950">"${escapeHtml(contradictionNote.rule.raw)}"</span>, which conflicts with the premise in your query.
+            </p>
+          </div>
+        `;
+      } else if (matchedRule) {
+        topOverlapScore = Math.round(matchedRule.score * 100);
+        const formattedRule = `IF ${matchedRule.rule.condition} THEN ${matchedRule.rule.conclusion}.`;
+        answerCard.innerHTML = `
+          <div class="rounded-2xl bg-[#18181B] text-white p-6 sm:p-7 space-y-4 shadow-lg">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4FF33] text-ink text-xs font-bold">
+              <span>⚡ Modus Ponens Deduction (${matchedRule.id})</span>
+            </div>
+            <p class="text-lg sm:text-xl font-semibold text-white leading-relaxed">
+              <span class="text-[#D4FF33]">Conclusion:</span> ${escapeHtml(matchedRule.rule.conclusion)}.
+            </p>
+            <div class="pt-3 border-t border-white/15 text-sm text-zinc-300 leading-relaxed">
+              <strong class="text-white">Rule applied (${matchedRule.id}):</strong> ${escapeHtml(formattedRule)}
+            </div>
+          </div>
+        `;
+      } else if (retrieved.length > 0) {
+        topOverlapScore = Math.round(retrieved[0].score * 100);
+        answerCard.innerHTML = `
+          <div class="rounded-2xl bg-[#D4FF33]/25 border border-[#b4e01b] p-6 sm:p-7 space-y-2.5">
+            <p class="text-xs font-mono font-bold uppercase tracking-wider text-ink">
+              ✓ Direct Factual Match (${retrieved[0].label})
+            </p>
+            <p class="text-base sm:text-lg font-medium text-ink leading-relaxed">
+              ${escapeHtml(retrieved[0].text)}
+            </p>
+          </div>
+        `;
+      } else {
+        answerCard.innerHTML = `
+          <div class="rounded-2xl bg-[#F4F4F5] border border-gray-300 p-6 space-y-2">
+            <p class="text-xs font-mono font-bold uppercase tracking-wider text-gray-600">
+              Insufficient supporting information
+            </p>
+            <p class="text-sm sm:text-base text-gray-700 leading-relaxed">
+              Vespera could not find matching facts or production rules in the uploaded document to answer this query.
+            </p>
+          </div>
+        `;
+      }
+
+      // Drawer 1: Retrieved Information
+      const retrievedDrawer = document.getElementById('drawer-retrieved');
+      if (retrieved.length > 0) {
+        retrievedDrawer.innerHTML = retrieved.slice(0, 3).map((item, idx) => `
+          <div class="p-3.5 rounded-xl bg-[#F9FAFB] border border-gray-200">
+            <div class="flex justify-between text-xs text-gray-500 mb-1 font-mono">
+              <span>${item.label} • Rank #${idx + 1}</span>
+              <span class="font-semibold text-ink">${Math.round(item.score * 100)}% keyword overlap</span>
+            </div>
+            <p class="text-gray-800">${escapeHtml(item.text)}</p>
+          </div>
+        `).join('');
+      } else {
+        retrievedDrawer.innerHTML = `<p class="text-gray-400">No matching sentences were retrieved from the knowledge base.</p>`;
+      }
+
+      // Drawer 2: Question Analysis
+      const analysisDrawer = document.getElementById('drawer-analysis');
+      analysisDrawer.innerHTML = `
+        <p><strong class="text-ink">Question Type:</strong> <span class="text-gray-700">${questionType}</span></p>
+        <p><strong class="text-ink">Overlap Score:</strong> <span class="font-mono text-ink font-semibold">${topOverlapScore}%</span></p>
+        <p><strong class="text-ink">Extracted Keywords:</strong> ${
+          queryKeywords.length > 0
+            ? queryKeywords.map(k => `<span class="inline-block px-2.5 py-0.5 mr-1.5 mt-1 rounded-full bg-[#F4F4F5] border border-gray-200 font-mono text-xs text-ink">${escapeHtml(k)}</span>`).join('')
+            : '<span class="text-gray-400">None</span>'
+        }</p>
+        <p><strong class="text-ink">Reasoning Path:</strong> <span class="text-gray-700">${
+          matchedRule ? `Modus Ponens Inference (${matchedRule.id} fired)` : contradictionNote ? `Blocked by Contradiction (${contradictionNote.conflict})` : retrieved.length > 0 ? 'Direct Keyword Overlap Retrieval' : 'Rejected (Out of Document Scope)'
+        }</span></p>
+      `;
+
+      document.getElementById('answer-section').classList.remove('hidden');
+    }
+
+    function loadSampleDocument(scrollToInput = false) {
+      constructKnowledgeBase('sample_document.txt', `${SAMPLE_DOCUMENT_TEXT.length} B`, SAMPLE_DOCUMENT_TEXT);
+      showToast('Sample AI document loaded! Knowledge base is ready.');
+      if (scrollToInput) {
+        document.getElementById('stage-input').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function askPreset(question) {
+      if (KB.sentences.length === 0) {
+        loadSampleDocument(false);
+      }
+      document.getElementById('question-input').value = question;
+      answerQuestion(question);
+    }
+
+    function handleAskQuestion(event) {
+      event.preventDefault();
+      if (KB.sentences.length === 0) {
+        showToast('Please upload a document or click "Try Demo" first.');
+        return;
+      }
+      const q = document.getElementById('question-input').value.trim();
+      if (!q) {
+        showToast('Please enter a question first.');
+        return;
+      }
+      answerQuestion(q);
+    }
+
+    async function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const ext = file.name.split('.').pop().toLowerCase();
+      try {
+        let extractedText = '';
+
+        if (ext === 'txt') {
+          extractedText = await file.text();
+        } else if (ext === 'pdf') {
+          const buffer = await file.arrayBuffer();
+          const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+          const pages = [];
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+            pages.push(content.items.map(item => item.str).join(' '));
+          }
+          extractedText = pages.join('\n');
+        } else if (ext === 'docx') {
+          const buffer = await file.arrayBuffer();
+          const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+          extractedText = result.value;
+        } else {
+          showToast('Unsupported format. Please select a .txt, .pdf, or .docx file.');
+          return;
+        }
+
+        if (!extractedText.trim()) {
+          showToast('No readable text found in that file.');
+          return;
+        }
+
+        const sizeLabel = file.size < 1024 ? `${file.size} B` : `${(file.size / 1024).toFixed(1)} KB`;
+        constructKnowledgeBase(file.name, sizeLabel, extractedText);
+        showToast(`Loaded "${file.name}" successfully.`);
+      } catch (err) {
+        showToast('Error reading file: ' + err.message);
+      }
+    }
+
+    function clearDocument() {
+      KB.fileName = '';
+      KB.sentences = [];
+      KB.facts = [];
+      KB.rules = [];
+      document.getElementById('file-input').value = '';
+      document.getElementById('stat-sentences').textContent = '0';
+      document.getElementById('stat-facts').textContent = '0';
+      document.getElementById('stat-rules').textContent = '0';
+      const uploadStatusArea = document.getElementById('upload-status-area');
+      if (uploadStatusArea) uploadStatusArea.classList.add('hidden');
+      const answerSection = document.getElementById('answer-section');
+      if (answerSection) answerSection.classList.add('hidden');
+      renderKbInspector();
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toast-box');
+      const el = document.createElement('div');
+      el.className = 'px-4 py-3 rounded-full bg-[#111111] text-white border border-white/15 text-xs font-medium shadow-xl transition-opacity duration-300';
+      el.textContent = msg;
+      box.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 300);
+      }, 3200);
+    }
+
+    // Drag and drop handlers
+    const dropZone = document.getElementById('drop-zone');
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+      dropZone.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
+    dropZone.addEventListener('dragover', () => dropZone.classList.add('border-ink', 'bg-[#C8FA32]/15'));
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-ink', 'bg-[#C8FA32]/15'));
+    dropZone.addEventListener('drop', e => {
+      dropZone.classList.remove('border-ink', 'bg-[#C8FA32]/15');
+      if (e.dataTransfer.files.length > 0) {
+        const input = document.getElementById('file-input');
+        input.files = e.dataTransfer.files;
+        handleFileUpload({ target: input });
+      }
+    });
+  </script>
+</body>
+</html>
